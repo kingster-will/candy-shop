@@ -17,7 +17,6 @@ export class CandyShopFake extends CandyShop {
       new PublicKey(TREASURY_MINT),
       new PublicKey(CANDY_SHOP_PROGRAM_ID),
       'devnet',
-      wallet
     );
   }
   stats(): Promise<any> {

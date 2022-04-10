@@ -41,7 +41,6 @@ export const Primary = (): JSX.Element => {
     return (
       <Order
         candyShop={candyShop}
-        walletPublicKey={wallet?.publicKey}
         order={order}
         walletConnectComponent={<div>Button</div>}
       />

@@ -7,6 +7,7 @@ import React from 'react';
 import { Order as OrderSchema } from 'solana-candy-shop-schema/dist';
 import imgDefault from '../../assets/img-default.png';
 import { notification } from 'utils/rc-notification';
+import { AnchorWallet, useAnchorWallet } from '@solana/wallet-adapter-react';
 
 export interface CancelModalDetailProps {
   onCancel: any;
@@ -21,20 +22,25 @@ export const CancelModalDetail = ({
   order,
   onChangeStep,
 }: CancelModalDetailProps): JSX.Element => {
+  const wallet = useAnchorWallet();
+
   const cancel = async () => {
-    onChangeStep(1);
-    candyShop
-      .cancel(
-        new web3.PublicKey(order.tokenAccount),
-        new web3.PublicKey(order.tokenMint),
-        new BN(order.price)
-      )
-      .then(() => {
-        onChangeStep(2);
-      })
-      .catch(() => {
-        notification('Transaction failed. Please try again later.', 'error');
-      });
+    if (wallet) {
+      onChangeStep(1);
+      candyShop
+        .cancel(
+          new web3.PublicKey(order.tokenAccount),
+          new web3.PublicKey(order.tokenMint),
+          new BN(order.price),
+          wallet
+        )
+        .then(() => {
+          onChangeStep(2);
+        })
+        .catch(() => {
+          notification('Transaction failed. Please try again later.', 'error');
+        });
+    }
   };
 
   const buttonContent = 'Cancel listing';

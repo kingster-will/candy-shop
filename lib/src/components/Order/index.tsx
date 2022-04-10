@@ -1,5 +1,6 @@
 import styled from '@emotion/styled';
-import { web3 } from "@project-serum/anchor";
+import { web3 } from '@project-serum/anchor';
+import { useAnchorWallet } from '@solana/wallet-adapter-react';
 import { BuyModal } from 'components/BuyModal';
 import { LiqImage } from 'components/LiqImage';
 import { CandyShop } from 'core/CandyShop';
@@ -8,18 +9,17 @@ import { Order as OrderSchema } from 'solana-candy-shop-schema/dist';
 
 export interface OrderProps {
   order: OrderSchema;
-  walletPublicKey: web3.PublicKey | undefined;
   candyShop: CandyShop;
   walletConnectComponent: React.ReactElement;
 }
 
 export const Order: React.FC<OrderProps> = ({
   order,
-  walletPublicKey,
   candyShop,
   walletConnectComponent,
 }) => {
   const [selection, setSelection] = useState<OrderSchema | null>(null);
+  const wallet = useAnchorWallet()
 
   const orderPrice = useMemo(() => {
     if (!order) return 0;
@@ -54,7 +54,6 @@ export const Order: React.FC<OrderProps> = ({
         <BuyModal
           order={selection}
           onClose={onClose}
-          walletPublicKey={walletPublicKey}
           candyShop={candyShop}
           walletConnectComponent={walletConnectComponent}
         />

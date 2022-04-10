@@ -19,7 +19,6 @@ export const CandyShopContent: React.FC = () => {
     new web3.PublicKey(TREASURY_MINT),
     new web3.PublicKey(CANDY_SHOP_PROGRAM_ID),
     'devnet',
-    wallet!
   );
 
   return (
@@ -39,7 +38,7 @@ export const CandyShopContent: React.FC = () => {
 
       <div style={{ marginBottom: 50 }}>
         <Orders
-          walletPublicKey={wallet?.publicKey}
+          wallet={wallet}
           candyShop={candyShop}
           walletConnectComponent={<WalletMultiButton />}
         />
@@ -49,7 +48,7 @@ export const CandyShopContent: React.FC = () => {
         <h1 style={{ textAlign: 'center' }}>Sell Your NFTs</h1>
         <Sell
           connection={connection}
-          walletPublicKey={wallet?.publicKey}
+          wallet={wallet}
           candyShop={candyShop}
           walletConnectComponent={<WalletMultiButton />}
         />

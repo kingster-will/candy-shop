@@ -1,5 +1,6 @@
 import styled from '@emotion/styled';
-import { web3 } from "@project-serum/anchor";
+import { AnchorWallet } from '@solana/wallet-adapter-react';
+import { Connection, PublicKey } from '@solana/web3.js';
 import { fetchOrdersByStoreIdAndWalletAddress } from 'api/backend/OrderAPI';
 import { SingleTokenInfo } from 'api/fetchMetadata';
 import { fetchNftsFromWallet } from 'api/fetchNftsFromWallet';
@@ -12,8 +13,8 @@ import { Order as OrderSchema } from 'solana-candy-shop-schema/dist';
 import { CandyShop } from './CandyShop';
 
 interface SellProps {
-  connection: web3.Connection;
-  walletPublicKey?: web3.PublicKey;
+  connection: Connection;
+  wallet?: AnchorWallet;
   candyShop: CandyShop;
   walletConnectComponent: React.ReactElement;
   style?: { [key: string]: string | number } | undefined;
@@ -23,7 +24,7 @@ interface SellProps {
  * React component that allows user to put an NFT for sale
  */
 export const Sell: React.FC<SellProps> = ({
-  walletPublicKey,
+  wallet,
   connection,
   candyShop,
   walletConnectComponent,
@@ -34,15 +35,15 @@ export const Sell: React.FC<SellProps> = ({
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    if (connection && walletPublicKey) {
+    if (connection && wallet) {
       (async () => {
         if (!isLoading && nfts.length === 0) {
           setIsLoading(true);
           const [userNfts, sellOrders] = await Promise.all([
-            fetchNftsFromWallet(connection, walletPublicKey),
+            fetchNftsFromWallet(connection, wallet.publicKey),
             fetchOrdersByStoreIdAndWalletAddress(
               candyShop.candyShopAddress.toString(),
-              walletPublicKey.toString()
+              wallet.publicKey.toString()
             ),
           ]);
           setNfts(userNfts);
@@ -51,7 +52,7 @@ export const Sell: React.FC<SellProps> = ({
         }
       })();
     }
-  }, [connection, walletPublicKey, candyShop, isLoading, nfts]);
+  }, [connection, wallet, candyShop, isLoading, nfts]);
 
   const hashSellOrders: any = useMemo(() => {
     return (
@@ -62,7 +63,7 @@ export const Sell: React.FC<SellProps> = ({
     );
   }, [sellOrders]);
 
-  if (!walletPublicKey) {
+  if (!wallet) {
     return (
       <div className="cds-container" style={{ textAlign: 'center' }}>
         {walletConnectComponent}

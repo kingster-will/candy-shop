@@ -1,3 +1,4 @@
+import { AnchorWallet, useAnchorWallet } from '@solana/wallet-adapter-react';
 import Modal from 'components/Modal';
 import Processing from 'components/Processing';
 import { CandyShop } from 'core/CandyShop';
@@ -20,7 +21,7 @@ export const CancelModal: React.FC<CancelModalProps> = ({
   candyShop,
 }) => {
   const [step, setStep] = useState(0);
-
+  const wallet = useAnchorWallet();
   // Handle change step
   const onChangeStep = useCallback((step: number) => setStep(step), []);
   const onCloseModal = useCallback(() => {

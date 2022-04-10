@@ -1,10 +1,10 @@
 import styled from '@emotion/styled';
-import { web3 } from "@project-serum/anchor";
-import { fetchOrdersByStoreId, SortBy } from 'api/backend/OrderAPI';
+import { AnchorWallet } from '@solana/wallet-adapter-react';
+import { SortBy } from 'api/backend/OrderAPI';
+import { Dropdown } from 'components/Dropdown';
 import { Empty } from 'components/Empty';
 import { Order } from 'components/Order';
 import { Skeleton } from 'components/Skeleton';
-import { Dropdown } from 'components/Dropdown';
 import { breakPoints } from 'constant/breakPoints';
 import React, { useEffect, useState } from 'react';
 import { CandyShop } from './CandyShop';
@@ -41,7 +41,7 @@ const SORT_OPTIONS: { value: SortBy; label: string }[] = [
 ];
 
 interface OrdersProps {
-  walletPublicKey?: web3.PublicKey;
+  wallet?: AnchorWallet;
   candyShop: CandyShop;
   walletConnectComponent: React.ReactElement;
   style?: { [key: string]: string | number } | undefined;
@@ -51,7 +51,7 @@ interface OrdersProps {
  * React component that displays a list of orders
  */
 export const Orders: React.FC<OrdersProps> = ({
-  walletPublicKey,
+  wallet,
   candyShop,
   walletConnectComponent,
   style,
@@ -106,7 +106,6 @@ export const Orders: React.FC<OrdersProps> = ({
                 <FlexItem key={key}>
                   <Order
                     order={item}
-                    walletPublicKey={walletPublicKey}
                     candyShop={candyShop}
                     walletConnectComponent={walletConnectComponent}
                   />

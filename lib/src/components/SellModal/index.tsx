@@ -1,5 +1,7 @@
 import styled from '@emotion/styled';
-import { BN, web3 } from '@project-serum/anchor';
+import { BN } from '@project-serum/anchor';
+import { AnchorWallet, useAnchorWallet } from '@solana/wallet-adapter-react';
+import { LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
 import { SingleTokenInfo } from 'api/fetchMetadata';
 import IconTick from 'assets/IconTick';
 import Modal from 'components/Modal';
@@ -27,34 +29,38 @@ export const SellModal: React.FC<SellModalProps> = ({
     price: undefined,
   });
   const [step, setStep] = useState(TransactionState.DISPLAY);
+  const wallet = useAnchorWallet();
 
   // List for sale and move to next step
   const sell = async () => {
-    setStep(TransactionState.PROCESSING);
+    if (wallet) {
+      setStep(TransactionState.PROCESSING);
 
-    if (!formState.price) {
-      notification('Please input sell price', 'error');
-      setStep(TransactionState.DISPLAY);
-    }
-
-    const price = formState.price! * web3.LAMPORTS_PER_SOL;
-
-    return candyShop
-      .sell(
-        new web3.PublicKey(nft.tokenAccountAddress),
-        new web3.PublicKey(nft.tokenMintAddress),
-        new BN(price)
-      )
-      .then((txHash) => {
-        console.log('Place sell order with transaction hash', txHash);
-        setStep(TransactionState.CONFIRMED);
-      })
-      .catch((err) => {
-        // Show error and redirect to step 0 again
-        console.log({ err });
-        notification('Transaction failed. Please try again later.', 'error');
+      if (!formState.price) {
+        notification('Please input sell price', 'error');
         setStep(TransactionState.DISPLAY);
-      });
+      }
+
+      const price = formState.price! * LAMPORTS_PER_SOL;
+
+      return candyShop
+        .sell(
+          new PublicKey(nft.tokenAccountAddress),
+          new PublicKey(nft.tokenMintAddress),
+          new BN(price),
+          wallet
+        )
+        .then((txHash) => {
+          console.log('Place sell order with transaction hash', txHash);
+          setStep(TransactionState.CONFIRMED);
+        })
+        .catch((err) => {
+          // Show error and redirect to step 0 again
+          console.log({ err });
+          notification('Transaction failed. Please try again later.', 'error');
+          setStep(TransactionState.DISPLAY);
+        });
+    }
   };
 
   // Check active button submit

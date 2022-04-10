@@ -1,4 +1,5 @@
 import styled from '@emotion/styled';
+import { useAnchorWallet } from '@solana/wallet-adapter-react';
 import { SingleTokenInfo } from 'api/fetchMetadata';
 import { CancelModal } from 'components/CancelModal';
 import { LiqImage } from 'components/LiqImage';
@@ -13,9 +14,13 @@ export interface NftProps {
   sellDetail?: OrderSchema;
 }
 
-export const Nft = ({ nft, candyShop, sellDetail }: NftProps): JSX.Element => {
+export const Nft = ({
+  nft,
+  candyShop,
+  sellDetail,
+}: NftProps): JSX.Element => {
   const [selection, setSelection] = useState<SingleTokenInfo | undefined>();
-
+  const wallet = useAnchorWallet();
   const onClose = useCallback(() => {
     setSelection(undefined);
   }, []);
@@ -43,7 +48,11 @@ export const Nft = ({ nft, candyShop, sellDetail }: NftProps): JSX.Element => {
       </Card>
 
       {selection && !isSellItem && (
-        <SellModal onCancel={onClose} nft={selection} candyShop={candyShop} />
+        <SellModal
+          onCancel={onClose}
+          nft={selection}
+          candyShop={candyShop}
+        />
       )}
 
       {selection && sellDetail ? (

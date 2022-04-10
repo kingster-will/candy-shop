@@ -42,15 +42,13 @@ export class CandyShop {
   private _treasuryMint: web3.PublicKey;
   private _programId: web3.PublicKey;
   private _env: web3.Cluster;
-  private _wallet: AnchorWallet;
   private _program: Program | undefined;
 
   constructor(
     candyShopCreatorAddress: web3.PublicKey,
     treasuryMint: web3.PublicKey,
     candyShopProgramId: web3.PublicKey,
-    env: web3.Cluster,
-    wallet: AnchorWallet
+    env: web3.Cluster
   ) {
     this._candyShopAddress = getCandyShopSync(
       candyShopCreatorAddress,
@@ -61,13 +59,12 @@ export class CandyShop {
     this._treasuryMint = treasuryMint;
     this._programId = candyShopProgramId;
     this._env = env;
-    this._wallet = wallet;
     configBaseUrl(env);
   }
   /**
    * Initiate the CandyShop object
    */
-  async initIfNotReady(): Promise<void> {
+  async initIfNotReady(wallet: AnchorWallet) {
     if (typeof this._program === 'undefined') {
       const options = Provider.defaultOptions();
       const connection = new web3.Connection(
@@ -76,7 +73,7 @@ export class CandyShop {
           : web3.clusterApiUrl('devnet'),
         options.commitment
       );
-      const provider = new Provider(connection, this._wallet, options);
+      const provider = new Provider(connection, wallet, options);
       console.log('fetching idl for programId', this._programId.toString());
 
       const idl = await Program.fetchIdl(this._programId, provider);
@@ -116,10 +113,11 @@ export class CandyShop {
     seller: web3.PublicKey,
     tokenAccount: web3.PublicKey,
     tokenMint: web3.PublicKey,
-    price: BN
+    price: BN,
+    wallet: AnchorWallet
   ): Promise<string> {
     console.log('buy called');
-    await this.initIfNotReady();
+    await this.initIfNotReady(wallet);
     const [auctionHouseAuthority, authorityBump] =
       await getAuctionHouseAuthority(
         this._candyShopCreatorAddress,
@@ -137,7 +135,7 @@ export class CandyShop {
     const [metadata] = await getMetadataAccount(tokenMint);
 
     const txHash = await buyAndExecuteSale(
-      this._wallet,
+      wallet,
       seller,
       tokenAccount,
       tokenMint,
@@ -160,9 +158,10 @@ export class CandyShop {
   public async sell(
     tokenAccount: web3.PublicKey,
     tokenMint: web3.PublicKey,
-    price: BN
+    price: BN,
+    wallet: AnchorWallet
   ): Promise<string> {
-    await this.initIfNotReady();
+    await this.initIfNotReady(wallet);
     const [auctionHouseAuthority, authorityBump] =
       await getAuctionHouseAuthority(
         this._candyShopCreatorAddress,
@@ -180,7 +179,7 @@ export class CandyShop {
     const [metadata] = await getMetadataAccount(tokenMint);
 
     const txHash = await sellNft(
-      this._wallet,
+      wallet,
       tokenAccount,
       tokenMint,
       this._treasuryMint,
@@ -200,9 +199,10 @@ export class CandyShop {
   async cancel(
     tokenAccount: web3.PublicKey,
     tokenMint: web3.PublicKey,
-    price: BN
+    price: BN,
+    wallet: AnchorWallet
   ): Promise<string> {
-    await this.initIfNotReady();
+    await this.initIfNotReady(wallet);
     const [auctionHouseAuthority, authorityBump] =
       await getAuctionHouseAuthority(
         this._candyShopCreatorAddress,
@@ -219,7 +219,7 @@ export class CandyShop {
 
     const [tradeState] = await getAuctionHouseTradeState(
       auctionHouse,
-      this._wallet.publicKey,
+      wallet.publicKey,
       tokenAccount,
       this._treasuryMint,
       tokenMint,
@@ -228,7 +228,7 @@ export class CandyShop {
     );
 
     const txHash = await cancelOrder(
-      this._wallet,
+      wallet,
       tokenAccount,
       tokenMint,
       auctionHouseAuthority,
