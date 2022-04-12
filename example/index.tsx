@@ -21,9 +21,10 @@ import { CandyShopContent } from './CandyShopContent';
 import { TORUS_WALLET_CLIENT_ID } from './constant/clientId';
 
 const App = () => {
-  const network = WalletAdapterNetwork.Devnet;
+  const network = WalletAdapterNetwork.Mainnet;
 
-  const endpoint = useMemo(() => web3.clusterApiUrl(network), [network]);
+  // const endpoint = useMemo(() => web3.clusterApiUrl(network), [network]);
+  const endpoint = useMemo(() => "https://weathered-holy-river.solana-mainnet.quiknode.pro/" , [network]);
 
   const wallets = useMemo(
     () => [

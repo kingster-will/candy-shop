@@ -72,7 +72,7 @@ export class CandyShop {
       const options = Provider.defaultOptions();
       const connection = new web3.Connection(
         this._env === 'mainnet-beta'
-          ? 'https://ssc-dao.genesysgo.net/'
+          ? 'https://weathered-holy-river.solana-mainnet.quiknode.pro/'
           : web3.clusterApiUrl('devnet'),
         options.commitment
       );

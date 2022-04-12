@@ -18,7 +18,7 @@ export const CandyShopContent: React.FC = () => {
     new web3.PublicKey(CREATOR_ADDRESS),
     new web3.PublicKey(TREASURY_MINT),
     new web3.PublicKey(CANDY_SHOP_PROGRAM_ID),
-    'devnet',
+    'mainnet-beta',
     wallet!
   );
 
